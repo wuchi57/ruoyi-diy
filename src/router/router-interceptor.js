@@ -1,12 +1,13 @@
 // import { useUserStore } from 'store'
 
-const whiteList = ['/login']
+import { getToken } from 'utils/auth.js'
+
+const whiteList = ['/login', 'register']
 
 export default function interceptor (to, from, next) {
 
   /**
   const userStore = useUserStore()
-
   if (userStore.token) {
     // 携带token
     // 可以在这里设置标题：Get title from route info
@@ -22,6 +23,15 @@ export default function interceptor (to, from, next) {
     }
   }
   **/
+  if (getToken()) {
+    next()
+  } else {
+    if (whiteList.indexOf(to.path) !== -1) {
+      // 在免登录名单内，直接进入
+      next()
+    } else {
 
-  next()
+    }
+    next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
+  }
 }
